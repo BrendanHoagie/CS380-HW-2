@@ -23,7 +23,7 @@ class HumanPlayer(Player):
             an Action representing the chosen action
         """
         ret = 0
-        actions = state.get_actions(self.get_token())
+        actions = state.get_actions(self.get_token().value)
         for i, action in enumerate(actions):
             print(f"{i}: {action}")
         while True:
@@ -31,4 +31,4 @@ class HumanPlayer(Player):
             if str.isnumeric(ret) and 0 <= int(ret) and int(ret) <= i:
                 break
             print(f"Error - invalid choice. ", end="")
-        return actions[ret]
+        return actions[int(ret)]

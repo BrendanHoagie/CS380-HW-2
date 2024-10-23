@@ -1,7 +1,8 @@
 from enum import Enum
 from connect3 import State, Action
+import util
 
-DEFAULT_STATE = "    | XXX|OOXO"
+DEFAULT_STATE = "   |   |   "
 
 
 class TokenType(Enum):
@@ -63,20 +64,49 @@ class Player:
 
 class Game:
 
-    def __init__(self, player_one: Player, player_two: Player, state: State) -> None:
+    def __init__(self, player_one: Player | None, player_two: Player | None) -> None:
         self._player_one = player_one
         self._player_two = player_two
-        self._game_state = state
+        self._game_state = State(DEFAULT_STATE)
+        self._moves = []
 
-    def play(self) -> None:
+    def set_player_one(self, p1: Player) -> None:
+        self._player_one = p1
+
+    def get_player_one(self) -> Player:
+        return self._player_one
+
+    def set_player_two(self, p2: Player) -> None:
+        self._player_two = p2
+
+    def get_player_two(self) -> Player:
+        return self._player_two
+
+    def play(self) -> tuple:
         """Simulates a game between two players.
-        Runs until the game is over and prints out the winner if there is one
+        Runs until the game is over, printing the board state at every step
+
+        Returns:
+            a Tuple (Str, List) where the Str represents the outcome and the List
+            is a record of all played moves
         """
+        player1_action = player2_action = last_action = None
         while not self._game_state.is_game_over():
-            self._game_state.execute(self._player_one.choose_action(self._game_state))
-            self._game_state.execute(self._player_two.choose_action(self._game_state))
+            player1_action = self._player_one.choose_action(self._game_state)
+            self._game_state = self._game_state.execute(player1_action)
+            util.pprint(self._game_state)
+            self._moves.append(self._game_state)
+            if self._game_state.is_game_over():
+                last_action = player1_action
+                break
+            player2_action = self._player_two.choose_action(self._game_state)
+            self._game_state = self._game_state.execute(player2_action)
+            util.pprint(self._game_state)
+            self._moves.append(self._game_state)
+            last_action = player2_action
         winner = self._game_state.get_winner()
         if winner:
-            print(f"{winner} is the winner!")
-            return
-        print(f"Draw!")
+            if last_action == player1_action:
+                return ("Player One", self._moves)
+            return ("Player Two", self._moves)
+        return (None, self._moves)
