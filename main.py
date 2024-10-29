@@ -1,9 +1,8 @@
-from game import Game, TokenType
+from game import Game, TokenType, DEFAULT_STATE
 from agent import RandomPlayer, MinimaxPlayer
 from human import HumanPlayer
 import util
 
-game = Game(None, None)
 players = {
     "human": [
         HumanPlayer,
@@ -35,17 +34,19 @@ if __name__ == "__main__":
     if not (p1_arg := util.get_arg(1)) or not (p2_arg := util.get_arg(2)):
         handle_cli_error()
     try:
-        p1_controller = players[p1_arg.lower()]
+        p1_controller = players[p1_arg.lower()][0]
     except KeyError:
         handle_cli_error(p1_arg)
 
     try:
-        p2_controller = players[p2_arg.lower()]
+        p2_controller = players[p2_arg.lower()][0]
     except KeyError:
         handle_cli_error(p2_arg)
 
-    game.set_player_one(p1_controller[0](TokenType.XTOKEN))
-    game.set_player_two(p2_controller[0](TokenType.OTOKEN))
+    game = Game(
+        p1_controller(TokenType.XTOKEN, DEFAULT_STATE),
+        p2_controller(TokenType.OTOKEN, DEFAULT_STATE),
+    )
     winner, moves = game.play()
     if not winner:
         print(f"The game is a draw!")

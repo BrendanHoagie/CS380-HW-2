@@ -71,15 +71,35 @@ class Game:
         self._moves = []
 
     def set_player_one(self, p1: Player) -> None:
+        """Sets the player for player one
+
+        Args:
+            p1: a Player representing player one
+        """
         self._player_one = p1
 
     def get_player_one(self) -> Player:
+        """Gets the player one player
+
+        Returns:
+            a Player representing player one
+        """
         return self._player_one
 
     def set_player_two(self, p2: Player) -> None:
+        """Sets the player for player two
+
+        Args:
+            p2: a Player representing player two
+        """
         self._player_two = p2
 
     def get_player_two(self) -> Player:
+        """Gets the player two player
+
+        Returns:
+            a Player representing player two
+        """
         return self._player_two
 
     def play(self) -> tuple:
@@ -91,6 +111,7 @@ class Game:
             is a record of all played moves
         """
         player1_action = player2_action = last_action = None
+        util.pprint(self._game_state)
         while not self._game_state.is_game_over():
             player1_action = self._player_one.choose_action(self._game_state)
             self._game_state = self._game_state.execute(player1_action)
@@ -105,6 +126,7 @@ class Game:
             self._moves.append(self._game_state)
             last_action = player2_action
         winner = self._game_state.get_winner()
+        print(winner)
         if winner:
             if last_action == player1_action:
                 return ("Player One", self._moves)

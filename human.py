@@ -27,7 +27,14 @@ class HumanPlayer(Player):
         for i, action in enumerate(actions):
             print(f"{i}: {action}")
         while True:
-            ret = input(f"Please choose an action (a number 0-{i}): ")
+            try:
+                ret = input(f"Please choose an action (a number 0-{i}): ")
+            except EOFError:
+                print("EOF, exiting.")
+                exit(2)
+            except KeyboardInterrupt:
+                print("Keyboard Interrupt, exiting.")
+                exit(2)
             if str.isnumeric(ret) and 0 <= int(ret) and int(ret) <= i:
                 break
             print(f"Error - invalid choice. ", end="")
