@@ -127,7 +127,7 @@ class MinimaxPlayer(Player):
             an Action representing the chosen action
         """
 
-        def _minimax(tree: Node, depth: int, player_type: PlayerType):
+        def _minimax(tree: Node, depth: int, alpha: int, beta: int, player_type: PlayerType):
             """An implementation of the minimax algorithm
 
             Args:
@@ -153,16 +153,22 @@ class MinimaxPlayer(Player):
             if player_type == PlayerType.MAXIMIZING:
                 max_eval = -sys.maxsize - 1  # -inf
                 for child_node in tree.get_children():
-                    cur_eval = _minimax(child_node, depth - 1, PlayerType.MINIMIZING)
+                    cur_eval = _minimax(child_node, depth - 1, alpha, beta, PlayerType.MINIMIZING)
                     child_node.set_value(cur_eval)
                     max_eval = max(max_eval, cur_eval)
+                    alpha = max(alpha, cur_eval)
+                    if beta <= alpha:
+                        break
                 return max_eval
 
             min_eval = sys.maxsize  # +inf
             for child_node in tree.get_children():
-                cur_eval = _minimax(child_node, depth - 1, PlayerType.MAXIMIZING)
+                cur_eval = _minimax(child_node, depth - 1, alpha, beta, PlayerType.MAXIMIZING)
                 child_node.set_value(cur_eval)
                 min_eval = min(min_eval, cur_eval)
+                beta = min(beta, cur_eval)
+                if beta <= alpha:
+                    break
             return min_eval
 
         max_depth = 4
@@ -177,6 +183,8 @@ class MinimaxPlayer(Player):
             # found all states
             if not fringe:
                 break
+
+            # add all child states of the current node
             cur = fringe.pop(0)
             cur_children = []
             for action in cur.get_state().get_actions(move_type.value):
@@ -184,6 +192,8 @@ class MinimaxPlayer(Player):
                 cur_children.append(child_node)
             cur.set_children(cur_children)
             fringe = fringe + cur_children
+
+            # At the end of the current level, increment depth & switch token type
             if last_on_level.get_state() == cur.get_state():
                 depth += 1
                 last_on_level = child_node
@@ -193,7 +203,9 @@ class MinimaxPlayer(Player):
                         break
 
         # make minimax choice
-        choice = _minimax(root, max_depth, PlayerType.MAXIMIZING)
+        alpha = -sys.maxsize - 1
+        beta = sys.maxsize
+        choice = _minimax(root, max_depth, alpha, beta, PlayerType.MAXIMIZING)
 
         # find choice in tree
         chosen_child = None
