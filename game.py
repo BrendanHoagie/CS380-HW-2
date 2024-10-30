@@ -113,6 +113,7 @@ class Game:
         player1_action = player2_action = last_action = None
         util.pprint(self._game_state)
         while not self._game_state.is_game_over():
+            # get player one actions and execute
             player1_action = self._player_one.choose_action(self._game_state)
             self._game_state = self._game_state.execute(player1_action)
             util.pprint(self._game_state)
@@ -120,13 +121,14 @@ class Game:
             if self._game_state.is_game_over():
                 last_action = player1_action
                 break
+
+            # get player two actions and execute
             player2_action = self._player_two.choose_action(self._game_state)
             self._game_state = self._game_state.execute(player2_action)
             util.pprint(self._game_state)
             self._moves.append(self._game_state)
             last_action = player2_action
         winner = self._game_state.get_winner()
-        print(winner)
         if winner:
             if last_action == player1_action:
                 return ("Player One", self._moves)

@@ -29,12 +29,16 @@ class HumanPlayer(Player):
         while True:
             try:
                 ret = input(f"Please choose an action (a number 0-{i}): ")
+
+            # handle exceptions
             except EOFError:
                 print("EOF, exiting.")
                 exit(2)
             except KeyboardInterrupt:
                 print("Keyboard Interrupt, exiting.")
                 exit(2)
+
+            # interpert input and decide what to do
             if str.isnumeric(ret) and 0 <= int(ret) and int(ret) <= i:
                 break
             print(f"Error - invalid choice. ", end="")

@@ -1,5 +1,5 @@
 from game import Game, TokenType, DEFAULT_STATE
-from agent import RandomPlayer, MinimaxPlayer
+from agent import RandomPlayer, MinimaxPlayer, MinimaxAlphaBetaPlayer
 from human import HumanPlayer
 import util
 
@@ -16,17 +16,27 @@ players = {
         MinimaxPlayer,
         "A computer player that uses the minimax algorithm to make decisions.",
     ],
+    "minimaxalphabeta": [
+        MinimaxAlphaBetaPlayer,
+        "A computer player that uses the minimax algorithm with alpha beta pruning to make decisions.",
+    ],
 }
 
 
-def handle_cli_error(s: str = None):
+def handle_cli_error(s: str = None) -> None:
+    """Fail gracefully if you get a CLI error
+
+    Args:
+        s: a String representing the incorrectly input player type.
+        If s is None, it means there was an incorrect usage (eg python main.py)
+    """
     if s != None:
         print(f"Error - {s} is not a valid player type")
     else:
         print(f"Unrecognized use. Usage: python main.py <player1> <player2>")
     print("All valid player types:")
     for k, v in players.items():
-        print(f"{k:9}{'-':4}{v[1]}")
+        print(f"{k:17}{'-':4}{v[1]}")
     exit(1)
 
 
